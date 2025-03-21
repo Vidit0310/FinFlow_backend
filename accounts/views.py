@@ -7,6 +7,8 @@ from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import UserProfile
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate
+
 
 
 @api_view(['POST'])
@@ -86,3 +88,31 @@ def create_userprofile(request):
         }, status=status.HTTP_201_CREATED)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_view(request):
+    """Handles user login and returns JWT tokens"""
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    if not email or not password:
+        return Response({'error': 'Email and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Authenticate the user
+    user = authenticate(username=email, password=password)
+
+    if user:
+        # Generate JWT tokens
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+            'message': 'Login successful',
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+            'user_id': user.id
+        }, status=status.HTTP_200_OK)
+
+    else:
+        return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
