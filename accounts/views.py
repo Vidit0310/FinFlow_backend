@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import status
+from django.utils.dateparse import parse_date
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -22,8 +23,9 @@ def signup(request):
     password = data.get('password')
     name = data.get('name')
     phone = data.get('phone')
+    dob = data.get('dob')
 
-    if not all([email, password, name, phone]):
+    if not all([email, password, name, phone, dob]):
         return Response({'error': 'All fields are required'}, status=status.HTTP_400_BAD_REQUEST)
 
     # Check if the user already exists
@@ -46,8 +48,9 @@ def signup(request):
     UserProfile.objects.create(
         user=user,
         phone_number=phone,
-        ufi="UFI-" + str(user.id),  # Example UFI
-        address=""
+        ufi=f"UFI-{user.id}",
+        address="",
+        dob=parse_date(dob)  # Save date of birth
     )
 
     # Generate JWT tokens
@@ -59,7 +62,6 @@ def signup(request):
         'refresh': str(refresh),
         'user_id': user.id
     }, status=status.HTTP_201_CREATED)
-
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -101,6 +103,7 @@ def login_view(request):
         return Response({'error': 'Email and password are required'}, status=status.HTTP_400_BAD_REQUEST)
 
     # Authenticate the user
+    print(email, password)
     user = authenticate(username=email, password=password)
 
     if user:
