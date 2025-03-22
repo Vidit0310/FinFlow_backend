@@ -1,11 +1,31 @@
 import json
+import random
+import string
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from accounts.models import (
-    UserProfile, BankAccount, FixedDeposit, DematAccount, Stock, MutualFund,
+    UserProfile, BankAccount, DematAccount, Stock, MutualFund,
     CreditCard, DebitCard, Asset, Debt, Insurance, RetirementAccount
 )
 from django.db import transaction
+
+
+# ✅ Function to generate random PAN
+def generate_random_pan():
+    return (
+        ''.join(random.choices(string.ascii_uppercase, k=5)) +
+        ''.join(random.choices(string.digits, k=4)) +
+        random.choice(string.ascii_uppercase)
+    )
+
+
+# ✅ Function to generate unique UFID
+def generate_unique_ufid():
+    while True:
+        ufid = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        if not UserProfile.objects.filter(ufid=ufid).exists():
+            return ufid
+
 
 class Command(BaseCommand):
     help = 'Import users and their financial data from JSON'
@@ -17,29 +37,41 @@ class Command(BaseCommand):
         try:
             with transaction.atomic():
                 for user_data in data['users']:
-                    username = user_data['user_id']
-                    password = '123'  # Default password
-                    email = f"{username.lower()}@example.com"
+                    
+                    # ✅ Access dictionary keys properly
+                    user_id = user_data.get('user_id')
+                    if not user_id:
+                        self.stdout.write(self.style.ERROR('Missing user_id. Skipping...'))
+                        continue
 
-                    # Create user
+                    username = f"{user_id.lower()}@example.com"
+                    password = '123'  # Default password
+                    email = f"{user_id.lower()}@example.com"
+
+                    # ✅ Create User
                     user, created = User.objects.get_or_create(username=username, email=email)
                     if created:
                         user.set_password(password)
                         user.save()
 
-                    # Create UserProfile
+                    # ✅ Generate unique PAN and UFID
+                    pan = generate_random_pan()
+                    ufid = generate_unique_ufid()
+
+                    # ✅ Create UserProfile
                     profile, _ = UserProfile.objects.get_or_create(
                         user=user,
-                        ufi=username,
+                        ufid=ufid,  
+                        pan=pan,  
                         address=user_data.get('location', ''),
-                        phone_number=''
+                        phone_number=user_data.get('phone', '')
                     )
 
-                    # Create Bank Accounts
+                    # ✅ Create Bank Accounts
                     bank_accounts = user_data.get('bank_accounts', {})
                     
                     for acc_type, acc_data in bank_accounts.items():
-                        if isinstance(acc_data, list):  # Handle multiple FDs, etc.
+                        if isinstance(acc_data, list):  # Handle multiple accounts
                             for acc in acc_data:
                                 BankAccount.objects.create(
                                     user_profile=profile,
@@ -57,12 +89,12 @@ class Command(BaseCommand):
                                 bank_name=acc_data.get('bank', 'Unknown')
                             )
 
-                    # Create Demat Account
+                    # ✅ Create Demat Account
                     demat_data = user_data.get('demat_account', {})
                     demat_acc, _ = DematAccount.objects.get_or_create(user_profile=profile)
 
                     for acc_type, acc_data in demat_data.items():
-                        if isinstance(acc_data, list):  # Multiple entries
+                        if isinstance(acc_data, list):
                             for acc in acc_data:
                                 if 'company' in acc:
                                     Stock.objects.create(
@@ -79,7 +111,6 @@ class Command(BaseCommand):
                                         value=acc['value']
                                     )
                         else:
-                            # Handle single demat record
                             MutualFund.objects.create(
                                 demat_account=demat_acc,
                                 fund_name=acc_type.replace('_', ' ').title(),
@@ -87,9 +118,9 @@ class Command(BaseCommand):
                                 value=acc_data.get('value', 0)
                             )
 
-                    # Create Credit and Debit Cards
+                    # ✅ Create Credit and Debit Cards
                     cards = user_data.get('credit_debit_cards', {})
-
+                    
                     for card_type, card_list in cards.items():
                         if isinstance(card_list, list):
                             for card in card_list:
@@ -107,7 +138,7 @@ class Command(BaseCommand):
                                         linked_account=card['linked_account']
                                     )
 
-                    # Create Assets
+                    # ✅ Create Assets
                     assets = user_data.get('assets', {})
                     for asset_type, asset_data in assets.items():
                         if isinstance(asset_data, list):
@@ -124,7 +155,7 @@ class Command(BaseCommand):
                                 value=asset_data.get('value', 0)
                             )
 
-                    # Create Debts and Liabilities
+                    # ✅ Create Debts and Liabilities
                     debts = user_data.get('debt_liabilities', {})
                     for debt_type, debt_list in debts.items():
                         if isinstance(debt_list, list):
@@ -138,7 +169,7 @@ class Command(BaseCommand):
                                     bank=debt['bank']
                                 )
 
-                    # Create Insurance
+                    # ✅ Create Insurance
                     insurance = user_data.get('insurance', {})
                     for ins_type, ins_data in insurance.items():
                         Insurance.objects.create(
@@ -149,7 +180,7 @@ class Command(BaseCommand):
                             premium=ins_data.get('premium', None)
                         )
 
-                    # Create Retirement Accounts
+                    # ✅ Create Retirement Accounts
                     retirement = user_data.get('retirement_accounts', {})
                     for acc_type, acc_data in retirement.items():
                         RetirementAccount.objects.create(
