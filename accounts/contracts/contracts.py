@@ -23,7 +23,7 @@ def register_user(name, birthdate, pan, ufid):
     print("✅ Connected to Ethereum Blockchain")
 
     # ✅ Deployed contract details
-    contract_address = "0x071d5b7D3046B76ccabB7d6F5ba9C0b1631c33Dc"  # Replace with your contract address
+    contract_address = "0x338284B178de240bd7F95290cd8e9ae33c7419E5"  # Replace with your contract address
 
     # Load contract ABI
     with open("contract.json", "r") as file:
