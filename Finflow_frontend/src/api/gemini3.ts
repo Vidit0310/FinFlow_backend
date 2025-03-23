@@ -13,7 +13,7 @@ export async function analyzeSmartContract(query: string): Promise<SmartContract
     // For text-only input, use the gemini-pro model
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-    const prompt = `You are an expert in blockchain and smart contracts. Please analyze and respond to the following query about smart contracts: ${query}`;
+    const prompt = `You are an expert in finance and investment. Please analyze and respond to the following query about finance: ${query}`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;

@@ -96,7 +96,7 @@ const SmartContractChatbot = () => {
     <div 
       className="flex flex-col h-[600px] bg-white rounded-lg shadow-lg border border-gray-200"
       role="region"
-      aria-label="Smart Contract Assistant Chat Interface"
+      aria-label="Smart Finance Assistant Chat Interface"
     >
       <div 
         className="bg-blue-600 p-4 rounded-t-lg"
@@ -104,7 +104,7 @@ const SmartContractChatbot = () => {
       >
         <div className="flex items-center gap-2 text-white">
           <Bot className="w-6 h-6" aria-hidden="true" />
-          <h2 className="text-lg font-semibold">Smart Contract Assistant</h2>
+          <h2 className="text-lg font-semibold">Smart Finance Assistant</h2>
         </div>
       </div>
 
@@ -186,7 +186,7 @@ const SmartContractChatbot = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about smart contracts..."
+            placeholder="Ask about smart finance..."
             className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             disabled={isLoading}
             aria-label="Message input"
@@ -316,92 +316,15 @@ const SmartContracts = () => {
       <Navbar />
       
       <main className="container mx-auto pt-24 pb-16 px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Smart Contracts & Transactions</h1>
-          <p className="text-muted-foreground mt-1">
-            View and manage your blockchain transactions and smart contract interactions
-          </p>
-        </div>
+        
 
-        <div className="mb-6 flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search transactions..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
-          
-          <div className="flex gap-2">
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="px-3 py-2 border rounded-md bg-background"
-            >
-              <option value="all">All Status</option>
-              <option value="completed">Completed</option>
-              <option value="pending">Pending</option>
-              <option value="failed">Failed</option>
-            </select>
-            
-            <Button variant="outline">
-              <Filter className="h-4 w-4 mr-2" />
-              Filter
-            </Button>
-            
-            <Button variant="outline">
-              <ArrowUpDown className="h-4 w-4 mr-2" />
-              Sort
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid gap-4 mb-8">
-          {filteredTransactions.map((tx) => (
-            <Card key={tx.id} className="p-4 hover:shadow-lg transition-shadow">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start space-x-4">
-                  {getStatusIcon(tx.status)}
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-medium">{tx.type}</h3>
-                      {getStatusBadge(tx.status)}
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      From: {tx.from}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      To: {tx.to}
-                    </p>
-                    <div className="flex items-center space-x-2 mt-2">
-                      <Badge variant="outline">{tx.amount}</Badge>
-                      <Badge variant="outline">Gas: {tx.gas}</Badge>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(tx.timestamp).toLocaleString()}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1 font-mono">
-                    {tx.hash}
-                  </p>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-
+        
         {/* Smart Contract Chatbot Section */}
         <div className="mt-12">
           <div className="mb-8">
-            <h2 className="text-2xl font-bold">Smart Contract Assistant</h2>
+            <h2 className="text-2xl font-bold">Smart Finance Assistant</h2>
             <p className="text-muted-foreground mt-1">
-              Get expert guidance on smart contracts, blockchain development, and DeFi protocols
+              Get expert guidance on finance, tax, and investmment.
             </p>
           </div>
           
@@ -416,19 +339,19 @@ const SmartContracts = () => {
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
                     <span className="text-blue-600">•</span>
-                    <p>Ask about smart contract security best practices</p>
+                    <p>Ask about the company's financee best practices</p>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-blue-600">•</span>
-                    <p>Learn about gas optimization techniques</p>
+                    <p>Learn about tax optimization techniques</p>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-blue-600">•</span>
-                    <p>Get help with contract deployment steps</p>
+                    <p>Get help with future planning steps</p>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-blue-600">•</span>
-                    <p>Understand common vulnerabilities and fixes</p>
+                    <p>Understand common vulnerabilities in retail portfolio.</p>
                   </li>
                 </ul>
               </Card>
@@ -447,7 +370,7 @@ const SmartContracts = () => {
                       }
                     }}
                   >
-                    ERC20 Tokens
+                    Budget 2025
                   </Button>
                   <Button 
                     variant="outline"
@@ -460,7 +383,7 @@ const SmartContracts = () => {
                       }
                     }}
                   >
-                    NFT Standards
+                   Investment
                   </Button>
                   <Button 
                     variant="outline"
@@ -473,7 +396,7 @@ const SmartContracts = () => {
                       }
                     }}
                   >
-                    DeFi Protocols
+                    Fin-Secure
                   </Button>
                 </div>
               </Card>
