@@ -45,7 +45,7 @@ class Command(BaseCommand):
                         continue
 
                     username = f"{user_id.lower()}@example.com"
-                    password = '123'  # Default password
+                    password = 'Test@123'  # Default password
                     email = f"{user_id.lower()}@example.com"
 
                     # ✅ Create User
